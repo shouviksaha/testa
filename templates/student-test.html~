@@ -1,0 +1,62 @@
+
+{% extends 'student-dashboard.html' %}
+
+
+{% block title %}
+<title>Test: {{details.title}}</title>
+{% endblock %}
+
+
+{% block navlist %}
+   <ul class="nav nav-list">
+       <li class="active">
+           <a href="/student-dashboard/tests/open-tests" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Open Tests</a>
+       </li>
+       <li>
+           <a href="/student-dashboard/tests/closed-tests" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Closed Tests</a>
+       </li>
+       <li></li>
+   </ul>
+{% endblock %}
+
+
+{% block breadcrumb %}
+ <ul class="breadcrumb">
+     <li>
+         <a href="/student-dashboard/tests/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Tests</a> <span class="divider">/</span>
+     </li>
+     <li>
+     {% if details.approved %}
+     <a href="/student-dashboard/tests/approved/">Approved Tests</a> <span class="divider">/</span>
+		{% else %}         
+         
+         <a href="/student-dashboard/tests/open-tests/">Open Tests</a> <span class="divider">/</span>
+       {% endif %}
+     </li>
+     <li class="active">{{details.title}}</li>
+ </ul>
+ {% endblock %}
+ 
+ {% block content %}
+ {% if message %}
+ <div class="alert">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  {{message}}
+</div>
+ {% else %}
+  <h3 style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">{{details.title}}</h3>
+  by &nbsp <h5>{{details.client}}</h5>
+
+ <p class="">
+ 	  {{details.description}}
+ </p>
+  <p class="">
+ 	  {{details.client_description}}
+ </p>
+ <p style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Time : {{details.duration}}</p>
+ <div class="">Number of questions : {{details.length}}</div>
+ <div class="">End date : {{details.end_date}}</div>
+ <p></p>
+ <a href="{% if details.not_yet %}#{% else %}/landing/{{details.client}}/{{details.test_key}}{% endif %}" class="btn btn-primary btn-large {% if details.not_yet %} disabled {%  endif %} pull-right">{% if details.not_yet %} Not Started {% else %} Take test {%  endif %}</a>
+ {% endif %}
+ {% endblock %}

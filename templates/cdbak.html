@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+
+
+
+{% block content %}
+
+
+<body>
+
+
+<strong>Open Tests</strong>
+
+<ul>
+{% for test in openList %}
+<li>
+{{test.client}}
+{{test.title}}
+{{test.end_date}}
+{{test.length}}
+<a href='{{test.test_link}}'>take test</a>
+</li>
+
+{% endfor %}
+</ul>
+
+
+
+<strong>Closed Tests</strong>
+
+<ul>
+{% for test in closedList %}
+<li>
+{{test.client}}
+{{test.title}}
+{{test.end_date}}
+{{test.length}}
+{% if test.applied == 1 %}
+<i>Applied</i>
+{% else %}
+
+<form action='/test/apply/{{test.test_id}}' method="post">
+{% csrf_token %}
+{% for a,b in test.apply_questions.items %}
+
+
+{{b}}<br/>
+<input type="text" name="q{{a}}"></input><br/>
+
+{% endfor %}
+
+<input name="no_q" type="hidden" value="{{test.no_q}}">
+<input name="apply" type="submit">
+</form>
+{% endif %}
+</li>
+
+
+{% endfor %}
+</ul>
+
+
+<strong>Approved Tests</strong>
+
+<ul>
+{% for test in approvedList %}
+<li>
+{{test.client}}
+{{test.title}}
+{{test.end_date}}
+{{test.length}}
+{{test.duration}}
+<a href='{{test.test_link}}'>take test</a>
+</li>
+
+
+{% endfor %}
+</ul>
+</body>
+
+
+{% endblock %}

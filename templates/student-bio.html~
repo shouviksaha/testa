@@ -1,0 +1,56 @@
+{% extends 'student-dashboard.html' %}
+
+
+{% block title %}
+<title>Profile</title>
+{% endblock %}
+
+{% block navlist %}
+<ul class="nav nav-list">
+	 <li class='nav-header'>
+	 Tests
+	 </li>
+    <li >
+        <a href="/student-dashboard/personal/applied/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Applied</a>
+    </li>
+     <li>
+    		<a href="/student-dashboard/tests/approved/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Approved</a>
+    </li>
+    <li>
+        <a href="/student-dashboard/tests/taken/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Taken</a>
+    </li>
+            <li>
+        <a href="/student-dashboard/tests/ongoing/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Ongoing</a>
+    </li>
+    <li class='nav-header'>
+	 Profile
+	 </li>
+	  <li class="active">
+        <a href="/student-dashboard/bio/" >View Profile</a>
+    </li>
+	 <li>
+        <a href="/change-password/" >Change password</a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block breadcrumb %}
+ <ul class="breadcrumb">
+  
+  <li>
+	<a href="/student-dashboard/personal" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Personal</a> <span class="divider">/</span>  
+  
+  </li>
+  <li class="active">Profile</li>
+ </ul>
+ {% endblock %}
+ 
+ {% block content %}
+  <h3 style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Profile</h3>
+
+<p class="lead">{{details.name}}</p>
+<p >{{details.username}}</p>
+ <p >{{details.email}}</p>
+<p >{{details.college}}</p>
+<p >{{details.department}}</p>
+ {% endblock %}

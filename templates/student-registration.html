@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+
+
+
+{% block content %}
+
+<body>
+    <div class="row container">
+    <h2 class="offset1">Student Registration</h2>
+        <div class="span4 pull-left well" style="margin-left:-40px" >
+            <h3>STUDENT REGISTRATION:</h3>
+            The reason Lorem Ipsum is the old standby is that it contains full paragraphs of greeked words that mirror actual patterns of text. Using the same sentence repeatedly will give you a false impression of how text will really look on the page and will create "rivers" of white through the paragraphs due to the repetition of the same number of characters and spaces. I can't imagine this would be useful for anything beyond a sentence or two.
+        </div> 
+
+        <div class="span7 pull-right " id="form">
+            <div class="span7 pull-right"  >
+{% if errors %}
+<div class="alert">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  {{errors}}
+</div>
+{% endif %}
+<form action='/student-reg/' method='POST'>
+{% csrf_token %}
+                    
+                    <p class="span3 pull-left"><label for="id_username">Username:</label> <input id="id_username" type="text" name="username" maxlength="100" placeholder="Username" required autofocus /></p>
+                    <p class="span3 pull-right"><label for="id_email">Email:</label> <input type="email" name="email" id="id_email" placeholder="example@example.com" required /></p>
+            </div>
+            <div class="span7 pull-right" >
+                <p class="span3 pull-left"><label for="id_password">Password:</label> <input type="password" name="password"  pattern=".{6,}" placeholder="Password" id="id_password"  required/></p>
+                <p class="span3 pull-right"><label for="id_retype_password">Retype Password:</label> <input type="password" placeholder="Re-type Password"  pattern=".{6,}"  name="retype_password" id="id_retype_password" required /></p>
+            </div>
+
+            <div class="span7 pull-right" >
+                <div class="span3 pull-left" >
+                    <p><label for="id_first_name">First name:</label> <input id="id_first_name" type="text" name="first_name" maxlength="100" placeholder="Name" required /></p>
+                    <p><label for="id_last_name">Last name:</label> <input id="id_last_name" type="text" name="last_name" maxlength="100" placeholder="Last Name" required  /></p>
+                    <p><label for="id_phone">Phone:</label> <input type="number" pattern=".{10,} "name="phone" id="id_phone" placeholder="Phone" required /></p>
+
+                </div>
+                <div class="span3 pull-right" >
+                    <p><label for="id_college">College:</label> <input id="id_college" type="text" name="college" maxlength="250" placeholder="Colege" required  /></p>
+                    <p><label for="id_department">Department:</label> <select name="department" id="id_department" >
+                            <option value="IT">IT</option>
+                            <option value="CSE">CSE</option>
+                            <option value="MCA">MCA</option>
+                            <option value="BT">BT</option>
+                            <option value="CE">CE</option>
+                            <option value="CHE">CHE</option>
+                            <option value="ECE">ECE</option>
+                            <option value="EE">EE</option>
+                            <option value="ME">ME</option>
+                            <option value="MME">MME</option>
+                            <option value="Other">Other</option>
+                        </select></p>
+                    <p><label for="id_year" >Expected year of passing:</label> <select name="year" id="id_year" >
+                            <option value="2014">2014</option>
+                            <option value="2015">2015</option>
+                            <option value="2016">2016</option>
+                        </select></p>
+
+
+                </div>
+                <input class="btn btn-inverse span7" type='submit' name='submit' value="REGISTER" style="margin-left: 20px; height: 60px !important;font-size:20px">
+                </form>
+                            </div>
+        </div>
+        </div>
+</body>
+
+{% endblock %}

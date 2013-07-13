@@ -1,0 +1,137 @@
+{% extends 'client-dashboard.html' %}
+
+
+
+
+
+
+
+
+
+
+ {% block navlist %}
+                        <ul class="nav nav-list">
+                            <li class="active">
+                                <a href="/client-dashboard/client-tests" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Your tests</a>
+                            </li>
+                            <li>
+                                <a href="/client-dashboard/upload-test" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Upload a test</a>
+                            </li>
+                             <li >
+							        <a href="/change-password/" >Change password</a>
+							    </li>
+								<li>
+							        <a href="/client-dashboard/bio" >View Profile</a>
+							    </li>
+                        </ul>
+                     {% endblock %}
+
+
+
+
+
+
+{% block content %}
+
+
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	jQuery("#tests").jqGrid({
+		url:'/jqgrid-handler/',
+		datatype: 'json',
+		mtype: 'GET',
+		colNames:['test id','Title', 'Duration','No of questions','Type'],
+		colModel :[
+		{name:'testno', index:'id', width:70},
+		{name:'title', index:'title'},
+		{name:'duration', index:'duration', align:'right'},
+		{name:'noq', index:'number_of_questions', align:'right'},
+		{name:'type', index:'type', align:'right'}],
+		pager: jQuery('#pager1'),
+		rowNum:10,
+		rowList:[10,20,30],
+		sortname: 'id',
+		sortorder: "desc",
+		viewrecords: true,
+		imgpath: '/static/css/images',
+		caption: 'My Tests',
+		onSelectRow: function(ids) {
+		if(ids == null) {
+			ids=0;
+			if(jQuery("#test-detail").jqGrid('getGridParam','records') >0 )
+			{
+				jQuery("#test-detail").jqGrid('setGridParam',{url:"/jqgrid-handler2/?ids="+ids,page:1});
+				jQuery("#test-detail").jqGrid('setCaption',"Test Detail: "+ids).trigger('reloadGrid');
+			}
+		} else {
+			jQuery("#test-detail").jqGrid('setGridParam',{url:"/jqgrid-handler2/?ids="+ids,page:1});
+			jQuery("#test-detail").jqGrid('setCaption',"Invoice Detail: "+ids).trigger('reloadGrid');			
+		}
+	}
+
+	
+
+	
+	
+	
+});
+
+
+
+		jQuery("#test-detail").jqGrid({
+		url:'/jqgrid-handler2/',
+		datatype: 'json',
+		mtype: 'GET',
+		colNames:['Id','Student','Apply Time', 'Taken Date','Applications','approved','performance'],
+		colModel :[
+		{name:'id', index:'id', width:25},
+		{name:'student', index:'student', width:75},
+		{name:'apply_datetime', index:'apply_datetime', width:125},
+		{name:'test_datetime', index:'test_datetime', align:'right', width:125},
+		{name:'applicationJSON', index:'applicationJSON', width:125},
+		{name:'approved', index:'approved', align:'right', width:45},
+		{name:'performance1', index:'performance1', align:'right', width:115}],
+		pager: jQuery('#pager2'),
+		multiselect:true,
+		rowNum:10,
+		rowList:[10,20,30],
+		sortname: 'id',
+		sortorder: "desc",
+		viewrecords: true,
+		imgpath: '/static/css/images'
+	});	
+
+
+	jQuery("#approve").click( function() {
+	var s;
+	s = jQuery("#test-detail").jqGrid('getGridParam','selarrrow');
+	if(s.length>0){
+	   $.ajax({
+				  url: "/approve/",
+				  type: "POST",
+				  data: {'approve':s.toString(),csrfmiddlewaretoken: '{{ csrf_token }}'}
+				});
+
+	
+		}
+	});
+
+
+});
+
+
+</script>
+
+
+
+<body>
+
+<table id="tests" class="scroll"></table>
+<div id="pager1" class="scroll" style="text-align:center;"></div>
+
+<hr/>
+<table id="test-detail" class="scroll"></table>
+<div id="pager2" class="scroll" style="text-align:center;"></div><br/>
+<a id="approve" class="btn btn-primary">Approve</a><br/><br/>
+
+{% endblock %}

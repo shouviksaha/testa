@@ -1,0 +1,121 @@
+{% extends 'student-dashboard.html' %}
+
+
+{% block title %}
+<title>Taken Tests</title>
+{% endblock %}
+
+{% block navlist %}
+<ul class="nav nav-list">
+	 <li class='nav-header'>
+	 Tests
+	 </li>
+    <li >
+        <a href="/student-dashboard/personal/applied/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Applied</a>
+    </li>
+     <li>
+    		<a href="/student-dashboard/tests/approved/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Approved</a>
+    </li>
+    <li class="active">
+        <a href="/student-dashboard/tests/taken/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Taken</a>
+    </li>
+     <li>
+        <a href="/student-dashboard/tests/ongoing/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Ongoing</a>
+    </li>
+    <li class='nav-header'>
+	 Profile
+	 </li>
+	  <li>
+        <a href="/student-dashboard/bio/" >Edit Profile</a>
+    </li>
+	 <li>
+        <a href="/change-password/" >Change password</a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block breadcrumb %}
+ <ul class="breadcrumb">
+  <li>
+      <a href="/student-dashboard/personal" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Personal</a> <span class="divider">/</span>
+
+  </li>
+  <li class="active">Taken tests</li>
+ </ul>
+ {% endblock %}
+
+ {% block content %}
+  <h3 style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Taken Tests</h3>
+ 
+
+
+            <table class="table table-hover ">
+                <tbody>
+                    <tr>
+                        <th>Test</th>
+                        <th>Uploader</th>
+                        <th>Date</th>
+                        <th>Score</th>
+                        
+
+                    </tr>
+                   
+                     	{% for test in takenList %}
+ <tr>
+								<td><a href="/student-dashboard/tests/analysis/{{test.test_id}}">{{test.title}}</a></td>
+								<td>{{test.client}}</td>
+							  <td>{{test.datetime}}</td>
+							<td>{{test.score}}</td>
+     </tr>
+								{% endfor %}  
+               
+
+                </tbody>
+            </table>
+
+
+{% if percentile %}
+
+<p class="text-success">Your Percentile: {{percentile}}</p>
+<br/>
+
+            <table class="table table-hover ">
+                <tbody>
+                    <tr>
+                        <th>Question</th>
+                        <th>Your Answer</th>
+                        <th>Correct Answer</th>
+                        
+
+                    </tr>
+                   
+                     	{% for r in result %}
+ <tr>
+								<td>{{r.question}}</td>
+								{% if r.user_answer %}
+								<td>{{r.user_answer}}</td>
+								
+								{% else %}
+								<td>-</td>
+								{% endif %}
+								{% if r.correct %}
+							  <td ><i class="icon-ok "></i></td>
+							  {% else %}
+							  <td class="text-error" >{{r.correct_answer}}</td>
+								{% endif %}
+     </tr>
+								{% endfor %}  
+               
+
+                </tbody>
+            </table>
+
+{% endif %}
+
+ {% endblock %}
+
+
+
+
+
+

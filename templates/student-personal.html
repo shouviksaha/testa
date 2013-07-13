@@ -1,0 +1,54 @@
+{% extends 'student-dashboard.html' %}
+
+
+{% block title %}
+<title>Personal</title>
+{% endblock %}
+
+{% block navlist %}
+<ul class="nav nav-list">
+	 <li class='nav-header'>
+	 Tests
+	 </li>
+    <li >
+        <a href="/student-dashboard/personal/applied/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Applied</a>
+    </li>
+     <li>
+    		<a href="/student-dashboard/tests/approved/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Approved</a>
+    </li>
+    <li>
+        <a href="/student-dashboard/tests/taken/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Taken</a>
+    </li>
+            <li>
+        <a href="/student-dashboard/tests/ongoing/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Ongoing</a>
+    </li>
+    <li class='nav-header'>
+	 Profile
+	 </li>
+	  <li>
+        <a href="/student-dashboard/bio/" >View Profile</a>
+    </li>
+	 <li>
+        <a href="/change-password/" >Change password</a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block breadcrumb %}
+ <ul class="breadcrumb">
+  <li class="active">Personal</li>
+ </ul>
+ {% endblock %}
+ 
+ {% block content %}
+  <h3 style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Personal</h3>
+
+ <p class="">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at felis urna,
+     eget aliquam mauris. Etiam sed augue arcu. Quisque ullamcorper pharetra
+     leo, id tempus elit viverra eu. Duis viverra lorem at dui imperdiet rutrum.
+     Sed lobortis enim tortor, id sed.Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at felis urna,
+     eget aliquam mauris. Etiam sed augue arcu. Quisque ullamcorper pharetra
+     leo, id tempus elit viverra eu. Duis viverra lorem at dui imperdiet rutrum.
+     Sed lobortis enim tortor, id sed.</p>
+ 
+ {% endblock %}

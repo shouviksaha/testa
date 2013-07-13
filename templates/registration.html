@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+
+<body>
+<form action='/checkreg/' method='POST'>
+{% csrf_token %}
+{{form.as_p}}
+<input type='submit' name='submit'>
+</form>
+</body>
+
+{% endblock %}
+

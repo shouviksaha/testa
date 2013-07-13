@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+    
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        {% block title %}
+        <title>Student Dashboard</title>
+        {% endblock %}
+
+
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/jquery-ui-1.10.3.custom.min.css" />
+<script src="/static/js/jquery.min.js" type="text/javascript"></script>
+<script src="/static/js/bootstrap.min.js" type="text/javascript"></script>
+
+{% block extraincludes %}
+{% endblock %}
+
+    </head>
+    
+    <body>
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <a class="brand" href="#">Student dashboard</a>
+                <ul class="nav">
+                    <li>
+                        <a href="/student-dashboard/tests" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Tests</a>
+                    </li>
+                    <li>
+                        <a href="/student-dashboard/personal" style="background-image: none; cursor: auto; background-position: 0% 0%; background-repeat: repeat repeat;">Personal</a>
+                    </li>
+                   
+                </ul>
+                <ul class="nav pull-right">  
+ <li><a href='/logout/'>Logout</a></li>
+ </ul>
+            </div>
+        </div>
+        <div class="container-fluid" style="margin-top:70px">
+            <div class="container-fluid">
+                <div class="container-fluid">
+                    <div class="span3">
+                    {% block navlist %}
+                        <ul class="nav nav-list">
+                            <li>
+                                <a href="/student-dashboard/tests/open-tests" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Open Tests</a>
+                            </li>
+                            <li>
+                                <a href="/student-dashboard/tests/closed-tests" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Closed Tests</a>
+                            </li>
+                            <li></li>
+                        </ul>
+                     {% endblock %}
+                    </div>
+                    <div class="span7">
+                        <div class="container-fluid">
+                        	{% block breadcrumb %}
+                            <ul class="breadcrumb">
+                             </ul>
+                            {% endblock %}
+                            
+                            {% block content %}
+                             <h3 style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Student Dashboard</h3>
+
+                            <p class="">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at felis urna,
+                                eget aliquam mauris. Etiam sed augue arcu. Quisque ullamcorper pharetra
+                                leo, id tempus elit viverra eu. Duis viverra lorem at dui imperdiet rutrum.
+                                Sed lobortis enim tortor, id sed.</p>
+   
+                            
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

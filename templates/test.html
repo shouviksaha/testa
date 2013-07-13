@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% block content %}
+
+<div class='row span10' style="margin:100px;margin-top:40px">
+<h3 class="span2 text-info">{{Title}}</h3>
+<br/>
+<br/>
+<br/>
+
+<div class="pull-right">
+<p class="text-warning">Time Left<br/>
+<span style="margin-left:5px" class="text-error lead" id="min"></span><span class="text-info lead">:</span><span class="text-error lead" id="sec"></span>
+</p>
+</div>
+
+<form id="qa" method="post" action="evaluate/">
+{% csrf_token %}
+<div class='span3' style="width:160px; height:430px ;overflow-y:scroll;">
+ <ul id='sidenav' class="nav nav-pills nav-stacked span2">
+ {% for question in questions %}
+							
+							    <li><a href="#tab{{question.q_no}}" data-toggle="tab">Question {{question.q_no}}</a></li>
+							  
+{% endfor %}
+							  </ul>
+
+
+</div>
+
+
+
+  <div class="tab-content span4" style='height:300px; padding:50px'>
+{% for question in questions %}
+
+
+ <div  id="tab{{question.q_no}}" class="tab-pane">
+ <div  style='height:280px;'>
+ <div><h5>{{question.question}}</h5></div>
+ <input type="hidden" name="{{question.id}}" value='-'>
+ <hr/>
+<p style="padding:5px"> <input type="radio" name="{{question.id}}" {% if question.selected_answer == 'a'%}checked {% endif %}value='a'>&nbsp;{{question.option_a}}</br></p>
+<p style="padding:5px">  <input type="radio" name="{{question.id}}" {% if question.selected_answer == 'b'%}checked {% endif %}value='b'>&nbsp;{{question.option_b}}</br></p>
+<p style="padding:5px"> <input type="radio" name="{{question.id}}"{% if question.selected_answer == 'c'%}checked {% endif %} value='c'>&nbsp;{{question.option_c}}</br></p>
+<p style="padding:5px"> <input type="radio" name="{{question.id}}" {% if question.selected_answer == 'd'%}checked {% endif %}value='d'>&nbsp;{{question.option_d}}</br></p>
+ </div>
+ </div>
+
+{% endfor %}
+</div>
+
+
+<div class="pull-right span6">
+
+<a id = 'prevbutton' href="#" class="btn btn-inverse" style="margin-top:50px">Previous</a>
+<a id = 'nextbutton' href="#" class="btn btn-inverse" style="margin-top:50px">Next</a>
+
+<div class="pull-right span3"><input class="btn btn-large btn-primary" style="margin-top:50px" type="submit" name="sub" value="submit answers">
+</div>
+</div>
+
+
+</div>
+</form>
+
+
+
+
+<script type="text/javascript" >
+jQuery(document).ready(function(){
+	var questionArray = [];
+	var answerArray = [];
+	{% for question in questions %}
+	questionArray.push({{question.id}});
+	answerArray.push('-');
+	{% endfor %}
+	
+	var index = 0;
+	{% for question in questions %}
+	
+	
+	var value = $("input[name='{{question.id}}']:checked").val();
+	answerArray[index] = value;
+	if(value == undefined){
+		answerArray[index] = '-';
+	}
+	
+	index = index + 1;
+	{% endfor %}
+	
+	console.log(answerArray)
+	
+	$.ajax({
+		  url: "/test-sync/",
+		  type: "POST",
+		  data: {'testId':'{{testId}}','questions':questionArray.toString(),'answers':answerArray.toString(),csrfmiddlewaretoken: '{{ csrf_token }}'}
+		});	
+		
+
+
+	$('[type=radio]').click(function(){
+		var questionId,index;		
+		questionId = parseInt($(this).attr('name'));
+		index = jQuery.inArray(questionId,questionArray);
+		answerArray[index] = $(this).val()
+		console.log(answerArray)	
+	   $.ajax({
+		  url: "/test-sync/",
+		  type: "POST",
+		  data: {'testId':'{{testId}}','questions':questionArray.toString(),'answers':answerArray.toString(),csrfmiddlewaretoken: '{{ csrf_token }}'}
+		});		
+		
+	});
+	
+	var total = {{endtime}};
+	var timer = function(){
+		total = total - 1
+		if(total < 1){
+		alert('Test Over');
+		HTMLFormElement.prototype.submit.call($('#qa')[0]);
+		}
+		var minutes = Math.floor(total/60);
+		var seconds = total - minutes*60;
+		$('#min').text(minutes);
+		if (seconds < 10){
+		$('#sec').text('0' + seconds);
+		}
+		else{
+		$('#sec').text(seconds);
+		}
+	}
+	
+
+	setInterval(timer,1000);
+	
+	$('#nextbutton').on('click', function() {        
+      nextTab();  
+  });
+
+function nextTab() {
+  var e = $('#sidenav li.active').next().find('a[data-toggle="tab"]');  
+  if(e.length > 0) e.click();  
+}
+
+	$('#prevbutton').on('click', function() {        
+      prevTab();  
+  });
+
+function prevTab() {
+  var e = $('#sidenav li.active').prev().find('a[data-toggle="tab"]');  
+  if(e.length > 0) e.click();  
+}
+
+});
+</script>
+
+<style type="text/css">
+
+
+#sidenav > li.active a,	#sidenav > li a:hover {
+			margin-left: -10px;
+			padding-left: 20px;
+		}
+		
+		
+</style>
+{% endblock %}
+</html>
+

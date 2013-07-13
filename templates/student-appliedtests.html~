@@ -1,0 +1,76 @@
+{% extends 'student-dashboard.html' %}
+
+
+{% block title %}
+<title>Applied Tests</title>
+{% endblock %}
+
+{% block navlist %}
+<ul class="nav nav-list">
+	 <li class='nav-header'>
+	 Tests
+	 </li>
+    <li class="active">
+        <a href="/student-dashboard/personal/applied/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Applied</a>
+    </li>
+     <li>
+    		<a href="/student-dashboard/tests/approved/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Approved</a>
+    </li>
+    <li>
+        <a href="/student-dashboard/tests/taken/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Taken</a>
+    </li>
+            <li>
+        <a href="/student-dashboard/tests/ongoing/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Ongoing</a>
+    </li>
+    <li class='nav-header'>
+	 Profile
+	 </li>
+	  <li>
+        <a href="/student-dashboard/bio/" >Edit Profile</a>
+    </li>
+	 <li>
+        <a href="/change-password/" >Change password</a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block breadcrumb %}
+ <ul class="breadcrumb">
+  <li>
+      <a href="/student-dashboard/personal" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Personal</a> <span class="divider">/</span>
+
+  </li>
+  <li class="active">Applied tests</li>
+ </ul>
+ {% endblock %}
+
+ {% block content %}
+  <h3 style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Applied Tests</h3>
+ 
+
+
+            <table class="table table-hover ">
+                <tbody>
+                    <tr>
+                        <th>Test</th>
+                        <th>End-date</th>
+                        <th>Uploader</th>
+                        <th>Time</th>
+                        <th>No. of questions</th>
+                    </tr>
+                   
+                     	{% for test in appliedList %}
+ <tr>
+								<td>{{test.title}}</td>
+								<td>{{test.end_date}}</td>
+								<td>{{test.client}}</td>
+							  <td>{{test.duration}}</td>
+							<td>{{test.length}}</td>
+     </tr>
+								{% endfor %}  
+               
+
+                </tbody>
+            </table>
+
+ {% endblock %}

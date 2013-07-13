@@ -1,0 +1,100 @@
+<html>
+<head>
+
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/jquery-ui-1.10.3.custom.min.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/ui.jqgrid.css" />
+<script src="/static/js/jquery.min.js" type="text/javascript"></script>
+<script src="/static/js/grid.locale-en.js" type="text/javascript"></script>
+<script src="/static/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+
+</head>
+
+
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	jQuery("#tests").jqGrid({
+		url:'/jqgrid-handler/',
+		datatype: 'json',
+		mtype: 'GET',
+		colNames:['test id','Title', 'Duration','No of questions','Type'],
+		colModel :[
+		{name:'testno', index:'id', width:70},
+		{name:'title', index:'title'},
+		{name:'duration', index:'duration', align:'right'},
+		{name:'noq', index:'number_of_questions', align:'right'},
+		{name:'type', index:'type', align:'right'}],
+		pager: jQuery('#pager1'),
+		rowNum:10,
+		rowList:[10,20,30],
+		sortname: 'id',
+		sortorder: "desc",
+		viewrecords: true,
+		imgpath: '/static/css/images',
+		caption: 'My Tests',
+		onSelectRow: function(ids) {
+		if(ids == null) {
+			ids=0;
+			if(jQuery("#test-detail").jqGrid('getGridParam','records') >0 )
+			{
+				jQuery("#test-detail").jqGrid('setGridParam',{url:"/jqgrid-handler2/?ids="+ids,page:1});
+				jQuery("#test-detail").jqGrid('setCaption',"Test Detail: "+ids).trigger('reloadGrid');
+			}
+		} else {
+			jQuery("#test-detail").jqGrid('setGridParam',{url:"/jqgrid-handler2/?ids="+ids,page:1});
+			jQuery("#test-detail").jqGrid('setCaption',"Invoice Detail: "+ids).trigger('reloadGrid');			
+		}
+	}
+
+	
+
+	
+	
+	
+});
+
+
+
+		jQuery("#test-detail").jqGrid({
+		url:'/jqgrid-handler2/',
+		datatype: 'json',
+		mtype: 'GET',
+		colNames:['Id','Student','Apply Time', 'Taken Date','approved','performance'],
+		colModel :[
+		{name:'id', index:'id', width:70},
+		{name:'student', index:'student'},
+		{name:'apply_datetime', index:'apply_datetime'},
+		{name:'test_datetime', index:'test_datetime', align:'right'},
+		{name:'approved', index:'approved', align:'right'},
+		{name:'performance1', index:'performance1', align:'right'}],
+		pager: jQuery('#pager2'),
+		rowNum:10,
+		rowList:[10,20,30],
+		sortname: 'id',
+		sortorder: "desc",
+		viewrecords: true,
+		imgpath: '/static/css/images'
+	});	
+	
+
+});
+</script>
+
+
+<body>
+
+<table id="tests" class="scroll"></table>
+<div id="pager1" class="scroll" style="text-align:center;"></div>
+
+<table id="test-detail" class="scroll"></table>
+<div id="pager2" class="scroll" style="text-align:center;"></div>
+
+</body>
+
+
+
+
+
+
+
+
+</html>

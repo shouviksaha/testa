@@ -1,0 +1,59 @@
+{% extends 'student-dashboard.html' %}
+
+
+{% block title %}
+<title>Closed Tests</title>
+{% endblock %}
+
+{% block navlist %}
+<ul class="nav nav-list">
+    <li >
+        <a href="/student-dashboard/tests/open-tests/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Open Tests</a>
+    </li>
+    <li class="active">
+        <a href="/student-dashboard/tests/closed-tests/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Closed Tests</a>
+    </li>
+    <li></li>
+</ul>
+{% endblock %}
+
+{% block breadcrumb %}
+ <ul class="breadcrumb">
+  <li>
+      <a href="/student-dashboard/tests" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Tests</a> <span class="divider">/</span>
+
+  </li>
+  <li class="active">Closed tests</li>
+ </ul>
+ {% endblock %}
+ 
+ {% block content %}
+  <h3 style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Closed Tests</h3>
+ 
+
+
+            <table class="table table-hover ">
+                <tbody>
+                    <tr>
+                        <th>Test</th>
+                        <th>End-date</th>
+                        <th>Uploader</th>
+                        <th>Time</th>
+                        <th>No. of questions</th>
+                    </tr>
+                   
+                     	{% for test in closedList %}
+ <tr>
+								<td><a href="/student-dashboard/tests/apply/{{test.id}}">{{test.title}}</a></td>
+								<td>{{test.end_date}}</td>
+								<td>{{test.client}}</td>
+							  <td>{{test.duration}}</td>
+							<td>{{test.length}}</td>
+      </tr>
+								{% endfor %}  
+              
+
+                </tbody>
+            </table>
+
+ {% endblock %}

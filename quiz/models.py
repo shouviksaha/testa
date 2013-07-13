@@ -1,0 +1,70 @@
+from django.db import models
+from users.models import client
+from django.contrib.auth.models import User
+import os
+import testa.settings
+from users.models import student,client
+
+
+def get_path(instance,filename):
+	user = instance.user_id
+	return os.path.join('tests','/',filename)
+	
+QUIZ_CHOICES = (
+('1','open'),
+('2','closed'),
+('3','secure')
+)
+
+
+class quiz(models.Model):
+	client = models.ForeignKey(client)
+	title = models.CharField(max_length=200)
+	description = models.TextField()
+	questions_file = models.FileField(upload_to='tests')
+	start_time = models.DateTimeField()
+	end_time = models.DateTimeField()
+	duration = models.IntegerField()
+	applicationJSON = models.TextField()
+	number_of_questions = models.IntegerField()
+	type = models.CharField(choices = QUIZ_CHOICES, max_length = 10, default = '1')
+	key = models.CharField(max_length = 100)
+	def __unicode__(self):
+		return self.title
+
+
+
+class testQuestion(models.Model):
+	quiz = models.ForeignKey(quiz)
+	question = models.CharField(max_length=1000)
+	option_a = models.CharField(max_length=500)
+	option_b = models.CharField(max_length=500)
+	option_c = models.CharField(max_length=500)
+	option_d = models.CharField(max_length=500)
+	correct_answer = models.CharField(max_length=50)
+	
+	
+	
+class StudentTest(models.Model):
+	student = models.ForeignKey(student)
+	quiz = models.ForeignKey(quiz)
+	applicationJSON = models.TextField()
+	apply_datetime = models.DateTimeField(null=True,blank=True)
+	test_datetime = models.DateTimeField(null=True,blank=True)
+	approved = models.BooleanField(default=False)
+	score = models.CharField(max_length = 100)
+	finish_datetime = models.DateTimeField(null=True,blank=True)
+	taken = models.NullBooleanField(default = None)	
+	
+class StudentTestQA(models.Model):
+	student_test = models.ForeignKey(StudentTest)
+	question = models.TextField()
+	answer = models.TextField()
+
+	
+class TestBackup(models.Model):
+	student = models.ForeignKey(student)
+	quiz = models.ForeignKey(quiz)
+	question=models.TextField()
+	answer = models.TextField()
+	current_datetime = models.DateTimeField()

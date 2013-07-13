@@ -1,0 +1,75 @@
+
+{% extends 'student-dashboard.html' %}
+
+
+{% block title %}
+<title>Test: {{details.title}}</title>
+{% endblock %}
+
+
+{% block navlist %}
+   <ul class="nav nav-list">
+       <li>
+           <a href="/student-dashboard/tests/open-tests" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Open Tests</a>
+       </li>
+       <li class="active">
+           <a href="/student-dashboard/tests/closed-tests" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Closed Tests</a>
+       </li>
+       <li></li>
+   </ul>
+{% endblock %}
+
+
+{% block breadcrumb %}
+ <ul class="breadcrumb">
+     <li>
+         <a href="/student-dashboard/tests/" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Tests</a> <span class="divider">/</span>
+     </li>
+     <li>
+         <a href="/student-dashboard/tests/closed-tests/">Closed Tests</a> <span class="divider">/</span>
+     </li>
+     <li class="active">{{details.title}}</li>
+ </ul>
+ {% endblock %}
+ 
+ {% block content %}
+  <h3 style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">{{details.title}}</h3>
+  by &nbsp <h5>{{details.client}}</h5>
+
+ <p class="">
+ 	  {{details.description}}
+ 	  Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at felis urna,
+     eget aliquam mauris. Etiam sed augue arcu. Quisque ullamcorper pharetra
+     leo, id tempus elit viverra eu. Duis viverra lorem at dui imperdiet rutrum.
+     Sed lobortis enim tortor, id sed.</p>
+ <p style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Time : {{details.duration}}</p>
+ <div class="">Number of questions : {{details.length}}</div>
+ <div class="">End date : {{details.end_date}}</div>
+ <p></p>
+ 
+ {% if details.no_q == 0 %}
+ {% else %}
+ <h5>Application Form</h5>
+ {% endif %}
+<form action='/apply/{{details.id}}' method="post">
+
+{% csrf_token %}
+{% for a,b in details.apply_questions.items %}
+
+
+{{b}}<br/>
+<input type="text"  name="q{{a}}"></input><br/>
+
+{% endfor %}
+
+<input name="no_q" type="hidden" value="{{details.no_q}}">
+
+{% if details.applied == False %}
+<input  class="btn btn-primary btn-large pull-right" value="Apply" name="apply"  type="submit">
+{% else %}
+<input disabled="disabled" class="btn btn-primary btn-large pull-right" value="Already Applied" name="apply" type="submit">
+{% endif %}
+</form>
+ 
+ 
+ {% endblock %}

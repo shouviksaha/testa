@@ -1,0 +1,220 @@
+from reg.forms import loginForm
+from django.contrib.auth.models import Group
+from testa import settings
+from django.template import RequestContext
+from django.http import HttpResponse,HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate,login
+from django import forms
+from reg.models import userInfo
+from quiz.models import quiz,testQuestion,StudentTest,StudentTestQA,TestBackup
+import string,random
+from quiz.forms import quizForm
+import xlrd 
+from users.models import client,student
+import datetime,simplejson
+from django.utils import timezone
+
+def upload(request):
+	if request.user.is_authenticated():
+		if request.user.groups.filter(name = 'Client').exists():
+			if request.method == 'POST':
+				form = quizForm(request.POST,request.FILES)
+				try:
+					file_name = request.FILES['questions_file'].name
+				except:
+					form = quizForm()
+					return render_to_response('upload.html',{'form':form,'message':'Attach a file'},context_instance=RequestContext(request))
+				if file_name.split('.')[-1] in ('xls','xlsx'):
+					if form.is_valid():
+						quiz = form.save(commit=False)
+						qdict={}
+						qdict.update({0:int(request.POST['no_q'])})
+						for i in range(int(request.POST['no_q'])):
+							qdict.update({i+1:request.POST['q'+str(i+1)]})
+						quiz.applicationJSON = simplejson.dumps(qdict)
+						r_string = ''.join(random.choice(string.lowercase + string.digits)for x in range(8))
+						title_list = request.POST['title'].split(' ')
+						title_string = '-'.join(title_list)				
+						quiz.key=r_string+'-'+title_string					
+						quiz.client = client.objects.get(userinfo = userInfo.objects.get(user = request.user))
+						quiz.save()
+						book = xlrd.open_workbook('media/tests/'+ request.FILES['questions_file'].name)
+						sheet = book.sheet_by_index(0)		
+						if int(quiz.number_of_questions) > sheet.nrows:
+							quiz.delete()
+							return render_to_response('upload.html',{'form':form,'message':'Questions per test is more than number of questions in the question bank'},context_instance=RequestContext(request))
+						for row in range(sheet.nrows):
+							question = sheet.cell(row,0).value
+							option_a = sheet.cell(row,1).value
+							option_b = sheet.cell(row,2).value
+							option_c = sheet.cell(row,3).value
+							option_d = sheet.cell(row,4).value
+							correct_answer = sheet.cell(row,5).value
+							if correct_answer not in 'abcd':
+								form = quizForm()
+								quiz.delete()
+								return render_to_response('upload.html',{'form':form,'message':'Problem with your xls file please check the format'},context_instance=RequestContext(request))								
+							testQ = testQuestion(quiz = quiz,question = question, option_a = option_a ,option_b = option_b ,option_c = option_c, option_d = option_d, correct_answer = correct_answer)
+							testQ.save()	
+											
+						form = quizForm()
+						message = 'Done. Add another?'
+						if quiz.type == '3':
+							message = """Here is the link to your test. A mail has been sent with details. testapp.ungineering.com/test/""" + quiz.client.userinfo.name + """/""" + quiz.key
+						#	mail_subject = 'Your test link'
+						#	mail_message = """Your test """ + quiz.title + """ has been uploaded. Students can take your test by registering and following this link 
+						#						""" 
+						#	mail_message+= """testapp.ungineering.com/test/""" + quiz.client.userinfo.name + """/""" + quiz.key
+						#	mail_from = 'noreply@testapp.com'
+						#	mail_to = 'svksaha91@gmail.com'
+						#	send_mail(mail_subject, mail_message,mail_from, [mail_to], fail_silently=False)
+						return render_to_response('upload.html',{'form':form,'message':message},context_instance=RequestContext(request))
+					else:
+						errors= form.errors
+						form = quizForm()
+						return render_to_response('upload.html',{'form':form,'message':errors},context_instance=RequestContext(request))
+				else:
+					form = quizForm()
+					return render_to_response('upload.html',{'form':form,'message':'Needs to be an xls file'},context_instance=RequestContext(request))
+			else:
+				form = quizForm()
+				return render_to_response('upload.html',{'form':form},context_instance=RequestContext(request))
+		else:
+			return HttpResponseRedirect('/')
+	else:
+		return HttpResponseRedirect('/')
+		
+		
+def take_test(request,test_key):
+	now = datetime.datetime.now()
+	test = quiz.objects.get(key=test_key)
+	if (test.type == '2' and StudentTest.objects.filter(student=student.objects.get(userinfo = userInfo.objects.get(user = request.user)),quiz=test,approved=True).count() == 1) or test.type == '1' or test.type == '3':
+		all_questions = testQuestion.objects.filter(quiz = test)
+		questions = random.sample(all_questions,test.number_of_questions)
+		questionList = []
+		count = 0
+		for q in questions:
+			details={}
+			count = count + 1
+			details['q_no'] = count
+			details['id'] = q.id
+			details['question']= q.question
+			details['option_a'] = q.option_a
+			details['option_b'] = q.option_b
+			details['option_c'] = q.option_c
+			details['option_d'] = q.option_d
+			questionList.append(details)
+
+
+		stlist = StudentTest.objects.filter(student = student.objects.get(userinfo = userInfo.objects.get(user = request.user)),quiz = test)
+		if stlist.count() == 1:
+			st = stlist[0]
+			if st.taken == False:
+				questionList = []
+				#take question from testbackup. chaap hai :P
+				tb = TestBackup.objects.get(student = student.objects.get(userinfo = userInfo.objects.get(user = request.user)),quiz = test)
+				qid_list = tb.question.split(',')
+				answer_list = tb.answer.split(',')
+				count = 0
+				for qid in qid_list:
+					q = testQuestion.objects.get(pk=qid)
+					details={}
+					details['selected_answer'] = answer_list[count]
+					count = count + 1
+					details['q_no'] = count
+					details['id'] = q.id
+					details['question']= q.question
+					details['option_a'] = q.option_a
+					details['option_b'] = q.option_b
+					details['option_c'] = q.option_c
+					details['option_d'] = q.option_d
+					questionList.append(details)
+					
+				pass		
+			elif st.taken == None:
+				#closed
+				st.taken= False
+				st.test_datetime = now.strftime('%Y-%m-%d %X')
+				st.save()
+			else:
+				return render_to_response('student-test.html', {'message':'Already Taken'} , context_instance=RequestContext(request))
+		else:
+			#open
+			st = StudentTest(student = student.objects.get(userinfo = userInfo.objects.get(user = request.user)),quiz = test,test_datetime = now.strftime('%Y-%m-%d %X'),taken = False)
+			st.save()
+			
+		try:
+			endtime =  datetime.datetime.strptime(st.test_datetime,'%Y-%m-%d %X') + datetime.timedelta(minutes = test.duration) - datetime.datetime.now()
+		except:
+			endtime = st.test_datetime + datetime.timedelta(minutes = test.duration) - timezone.now()
+		return render_to_response('test.html',{'endtime':int(((endtime.seconds + endtime.days * 24 * 3600) * 10**6) / 10**6),'testId':test.id,'Title':test.title,'questions':questionList},context_instance=RequestContext(request))
+	else:
+		return render_to_response('student-test.html', {'message':'Not Approved'} , context_instance=RequestContext(request))
+		
+def test_apply(request,test_id):
+	now = datetime.datetime.now()
+	test = quiz.objects.get(pk=test_id)
+
+	if StudentTest.objects.filter(student = student.objects.get(userinfo = userInfo.objects.get(user = request.user)),quiz = test).count() >0:
+		return render_to_response('student-test.html', {'message':'Already applied'} , context_instance=RequestContext(request))
+	else:
+		application_answers = {}
+		no_q = int(request.POST['no_q'])
+		for i in range(no_q):
+			if not request.POST['q'+str(i+1)]:
+				return render_to_response('student-test.html', {'message':'Form has errors'} , context_instance=RequestContext(request))			
+			application_answers.update({i+1:request.POST['q'+str(i+1)]})
+		appJSON = simplejson.dumps(application_answers)
+		st = StudentTest(student = student.objects.get(userinfo = userInfo.objects.get(user = request.user)),quiz = test,applicationJSON = appJSON, apply_datetime = now.strftime('%Y-%m-%d %X'))
+		st.save()
+		return render_to_response('student-test.html', {'message':'Applied!'} , context_instance=RequestContext(request))
+
+
+def evaluate_test(request,test_key):
+	now = datetime.datetime.now()
+	if request.user.groups.filter(name = 'Student').exists():
+		if request.method == 'POST':
+			now = datetime.datetime.now()
+			test = quiz.objects.get(key=test_key)
+			no_q = test.number_of_questions
+			st = StudentTest.objects.get(quiz=test,student = student.objects.get(userinfo = userInfo.objects.get(user = request.user)),test_datetime__isnull = False)
+			score = 0
+			for key in request.POST:
+				if key == 'csrfmiddlewaretoken' or key == 'sub':
+					continue
+				answer = request.POST[key]
+				question = testQuestion.objects.get(pk = key)
+				stqa = StudentTestQA(student_test_id = st.id,question = key, answer = answer)
+				stqa.save()
+				if answer == question.correct_answer:
+					score = score + 1
+			st.score = round(float(score)/float(no_q)*100,2)
+			st.finish_datetime = now.strftime('%Y-%m-%d %X')
+			st.taken = True
+			st.save()
+			return HttpResponseRedirect('/student-dashboard/tests/taken/')		
+		else:
+			return HttpResponseRedirect('/')		 		
+	else:
+		return HttpResponseRedirect('/')
+	
+
+def test_sync(request):
+	now = datetime.datetime.now()
+	testId = request.POST['testId']
+	questions = request.POST['questions']
+	answers = request.POST['answers']
+	TestBackupList = TestBackup.objects.filter(student = student.objects.get(userinfo = userInfo.objects.get(user = request.user)),quiz_id = testId)
+	if TestBackupList.count() == 1:
+		tb = TestBackupList[0]
+		tb.question = questions
+		tb.answer = answers
+		tb.current_datetime = now.strftime('%Y-%m-%d %X')
+		tb.save()
+	elif TestBackupList.count() == 0:
+		tb = TestBackup(student = student.objects.get(userinfo = userInfo.objects.get(user = request.user)),quiz_id = testId,question = questions,answer = answers, current_datetime = now.strftime('%Y-%m-%d %X'))
+		tb.save()
+	return HttpResponse('Success')
+		
